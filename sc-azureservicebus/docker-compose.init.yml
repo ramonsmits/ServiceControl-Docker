@@ -2,6 +2,7 @@ volumes:
 
   data-ravendb:
 
+
 services:
 
   ravendb:
@@ -35,7 +36,6 @@ services:
     image: particular/servicecontrol-audit:latest
     ports:
       - 44444:44444
-    restart: unless-stopped
     env_file: .env
     #mem_limit: 8192m
     entrypoint: ./app/ServiceControl.Audit --setup
