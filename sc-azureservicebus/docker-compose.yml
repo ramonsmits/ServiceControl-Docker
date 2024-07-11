@@ -1,7 +1,8 @@
 volumes:
 
   data-ravendb:
-  
+
+
 services:
 
   ravendb:
@@ -11,6 +12,7 @@ services:
       - 8080:8080
     volumes:
       - data-ravendb:/opt/RavenDB/Server/RavenData
+    restart: unless-stopped
 
   error:
     depends_on:
@@ -19,9 +21,9 @@ services:
     env_file: .env
     ports:
       - 33333:33333
-  #   env_file: .env
-  #   #mem_limit: 8192m
-  #   restart: unless-stopped
+    #mem_limit: 8192m
+    restart: unless-stopped
+
   monitoring:
     image: particular/servicecontrol-monitoring:latest
     ports:
