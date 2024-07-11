@@ -9,7 +9,7 @@ services:
     image: particular/servicecontrol-ravendb:latest-x64
     env_file: .env
     ports:
-      - 8888:8080
+      - 8080:8080
     volumes:
       - data-ravendb:/opt/RavenDB/Server/RavenData
     restart: unless-stopped
