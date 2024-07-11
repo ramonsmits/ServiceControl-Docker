@@ -46,4 +46,4 @@ services:
     image: particular/servicepulse:latest
     env_file: .env
     ports:
-     - 9090:90
+      - 80:90
