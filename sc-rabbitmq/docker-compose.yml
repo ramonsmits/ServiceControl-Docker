@@ -21,15 +21,21 @@ services:
     env_file: .env
     ports:
       - 33333:33333
+    volumes:
+      - ../entrypoint-error.sh:/entrypoint.sh
     #mem_limit: 8192m
     restart: unless-stopped
+    entrypoint: ./entrypoint.sh 
 
   monitoring:
     image: particular/servicecontrol-monitoring:latest
     ports:
       - 33633:33633
+    volumes:
+      - ../entrypoint-monitoring.sh:/entrypoint.sh
     env_file: .env
     restart: unless-stopped
+    entrypoint: ./entrypoint.sh
 
   audit:
     depends_on:
@@ -37,9 +43,12 @@ services:
     image: particular/servicecontrol-audit:latest
     ports:
       - 44444:44444
+    volumes:
+      - ../entrypoint-audit.sh:/entrypoint.sh
     restart: unless-stopped
     env_file: .env
     #mem_limit: 8192m
+    entrypoint: ./entrypoint.sh
 
   pulse:
     depends_on:
