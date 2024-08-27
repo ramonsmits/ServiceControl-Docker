@@ -44,10 +44,9 @@ services:
     image: particular/servicepulse:1.41
     labels:
       traefik.enable: true
-      traefik.http.routers.whoami.rule: Host(`servicepulse.localhost`)
-      traefik.http.routers.whoami.tls: true
-      traefik.http.routers.whoami.entrypoints: websecure
-      traefik.http.routers.whoami.middlewares: auth
+      traefik.http.routers.pulse.rule: Host(`servicepulse.localhost`)
+      traefik.http.routers.pulse.entrypoints: web
+      traefik.http.routers.pulse.middlewares: auth
       traefik.http.middlewares.auth.basicauth.users: test:$$2y$$12$$ci.4U63YX83CwkyUrjqxAucnmi2xXOIlEF6T/KdP9824f1Rf1iyNG
     env_file: .env
 
@@ -56,9 +55,8 @@ services:
     command:
       - "--providers.docker"
       - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.address=:80"
     ports:
       - 80:80
-      - 443:443
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
