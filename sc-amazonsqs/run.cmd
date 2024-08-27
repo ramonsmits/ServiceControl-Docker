@@ -1,2 +1,2 @@
 docker-compose up --detach %*
-start http://localhost
+start http://servicepulse.localhost
