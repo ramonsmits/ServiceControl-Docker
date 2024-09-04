@@ -1,6 +1,6 @@
 # ServiceControl docker deployment
 
-This creates a docker deployment and adds a basis authentication traefik reverse proxy.
+Create a ServiceControl docker example deployment and adds a basis authentication Traefik reverse proxy.
 
 > [!NOTE]
 > This reverse proxy configuration is not secure, [setup Traefik to use HTTPS](https://doc.traefik.io/traefik/https/overview/).
