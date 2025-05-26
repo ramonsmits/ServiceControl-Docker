@@ -1,62 +1,64 @@
 volumes:
 
   data-ravendb:
-
+  config-ravendb:
+  data-sqlt:
 
 services:
 
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'yourStrong(!)Password'
+      MSSQL_SA_PASSWORD: 'yourStrong(!)Password'
+      MSSQL_DB: 'nservicebus'
+      MSSQL_USER: 'nservicebus'
+      MSSQL_PASSWORD: 'yourStrong(!)Password'
+    volumes:
+      - data-sqlt:/var/opt/mssql
+    ports:
+      - 1433:1433
+
   ravendb:
-    image: particular/servicecontrol-ravendb:5.7
+    image: ${CR}particular/servicecontrol-ravendb:${SC_TAG}
     env_file: .env
     volumes:
-      - data-ravendb:/opt/RavenDB/Server/RavenData
-    restart: unless-stopped
+      - data-ravendb:/var/lib/ravendb/data
+      - config-ravendb:/var/lib/ravendb/config
 
   error:
     depends_on:
       - ravendb
-    image: particular/servicecontrol:5.7
-    command:
-     - "--setup-and-run"
+      - mssql
+    image: ${CR}particular/servicecontrol:${SC_TAG}
+    command: --setup-and-run
     env_file: .env
     restart: unless-stopped
 
   monitoring:
-    image: particular/servicecontrol-monitoring:5.7
-    command:
-     - "--setup-and-run"
+    image: ${CR}particular/servicecontrol-monitoring:${SC_TAG}
+    depends_on:
+      - mssql
+    command: --setup-and-run
     env_file: .env
     restart: unless-stopped
 
   audit:
     depends_on:
       - ravendb
-    image: particular/servicecontrol-audit:5.7
-    command:
-     - "--setup-and-run"
+      - mssql
+    image: ${CR}particular/servicecontrol-audit:${SC_TAG}
+    command: --setup-and-run
     restart: unless-stopped
     env_file: .env
 
   pulse:
     depends_on:
+      - audit
       - error
       - monitoring
-    image: particular/servicepulse:1.41
-    labels:
-      traefik.enable: true
-      traefik.http.routers.pulse.rule: Host(`servicepulse.localhost`)
-      traefik.http.routers.pulse.entrypoints: web
-      traefik.http.routers.pulse.middlewares: auth
-      traefik.http.middlewares.auth.basicauth.users: test:$$2y$$12$$ci.4U63YX83CwkyUrjqxAucnmi2xXOIlEF6T/KdP9824f1Rf1iyNG
+    image: ${CR}particular/servicepulse:${SP_TAG}
     env_file: .env
-
-  traefik:
-    image: traefik:v3.1
-    command:
-      - "--providers.docker"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
     ports:
-      - 80:80
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    - 9090:9090
